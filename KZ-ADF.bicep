@@ -93,7 +93,7 @@ resource adfkz 'Microsoft.DataFactory/factories@2018-06-01' = {
   }
 }
 
-/*
+
 resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   parent: adfkz
   name: dataFactoryBlobLinkedServiceName
@@ -105,4 +105,4 @@ resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedser
     }
   }
 }
-*/
+

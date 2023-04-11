@@ -1,24 +1,15 @@
 // ***************************************************************************************************************
-// ***** RESET Deploymenet *****
 // ***** purge keyvault after soft-delete *****
 // az keyvault list-deleted --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 --resource-type vault
 // az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
 // ***************************************************************************************************************
 
 //@description('Location of the resources')
-param location string = resourceGroup().location
+//param location string = resourceGroup().location
+param location string 
+param tag string
 
-@description('Name of the Azure storage account that contains the input/output data.')
-param storageAccountName string = 'stg${resourceGroup().name}'
-
-@description('Key Valut Name')
-param keyVaultName string = 'kv-${resourceGroup().name}'
-
-@description('Data Factory Name')
-param dataFactoryName string = 'adf-${resourceGroup().name}'
-
-@description('Name of the blob container in the Azure Storage account.')
-param blobContainerName string = 'data'
+param storageAccountName string  = 'stgkzdefault'
 
 // *** Variable Declarations ***
 // Set Resource Tag Values
@@ -27,21 +18,10 @@ var tagDeploy = 'IaC'
 var objectID = '194da7d9-e9eb-454d-a07a-4f68b547f960'
 
 
-var storageAccountAccessKeySecretName = 'storageAccountAccessKey'
-var storageAccountConnectionStringSecretName = 'storageAccountConnectionString'
-var dataFactoryBlobLinkedServiceName = 'AzureBlob'
-var dataFactorySQLLinkedServiceName = 'AzureSQL'
-var dataFacotryKVLinkedServiceName = 'AzureKV'
-var dataFactoryCSVDataSet = 'CSV_parameters'
-var dataFactorySQLDataSet = 'SQL_parameters'
-var dataFactoryPipeline = 'CopyData_parameters'
-
-
-
 // DLv2 Compatible Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
-  location:  location
+  location: location
   sku: {
     name: 'Standard_LRS'
   }
@@ -52,7 +32,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 
   tags:{
-    ID: tagID
+    ID: tag
     Deploy: tagDeploy
   }
 
@@ -62,14 +42,17 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 
 
+
+/*
 resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' ={
   name: '${storageAccount.name}/default/${blobContainerName}'
-//  dependsOn:[storageAccount]
+  dependsOn:[storageAccount]
 }
 
-// create connection string from storage account access key and save in Key Vault
 var storageAccessKey = storageAccount.listKeys().keys[0].value
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccessKey};EndpointSuffix=core.windows.net'
+
+output storageName string = storageAccount.name
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01'= {
   name: keyVaultName
@@ -155,7 +138,7 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
       }
     }
   }
-
+*/
 
 
 
@@ -174,7 +157,7 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
 */
 
 
-
+/*
   tags: {
     ID: tagID
     Deploy: tagDeploy
@@ -229,11 +212,11 @@ resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedser
           referenceName:dataFacotryKVLinkedServiceName
           type: 'LinkedServiceReference'
         }
-        secretName: secretStorageConnectionString.name
+        secretName: storageAccountConnectionStringSecretName
       }
       }
     }
   }
 
-
+  */
 

@@ -546,6 +546,10 @@ resource myDataset 'Microsoft.DataFactory/factories/datasets@2021-06-01-preview'
 In this example, we've defined a dataset resource named myDataset of type AzureBlob, and set its linkedServiceName property to keyVaultLinkedService. We've also used the @Microsoft.KeyVault expression syntax to reference the mySecret secret in the dataset's connectionString property.
 
 
+
+
+
+
 Barry Fridley
 how would I delete or reset the resources if I wanted to start over?
 To delete or reset the resources created by your Bicep deployment, you can use the Azure CLI or Azure PowerShell. Here are some examples:

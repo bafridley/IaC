@@ -1,0 +1,116 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.16.2.56959",
+      "templateHash": "10883036994591849792"
+    }
+  },
+  "parameters": {
+    "resourceGroupName": {
+      "type": "string",
+      "defaultValue": "rg-default",
+      "metadata": {
+        "description": "Resource group to create"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "Region for the Resource Group"
+      }
+    },
+    "tag": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "tagID": "sandbox",
+    "tagDeploy": "IaC"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2022-09-01",
+      "name": "[parameters('resourceGroupName')]",
+      "location": "[parameters('location')]",
+      "tags": {
+        "ID": "[parameters('tag')]",
+        "Deploy": "[variables('tagDeploy')]"
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2022-09-01",
+      "name": "testDeployment",
+      "resourceGroup": "[parameters('resourceGroupName')]",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "tag": {
+            "value": "[parameters('tag')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "metadata": {
+            "_generator": {
+              "name": "bicep",
+              "version": "0.16.2.56959",
+              "templateHash": "3526326532077902287"
+            }
+          },
+          "parameters": {
+            "location": {
+              "type": "string"
+            },
+            "tag": {
+              "type": "string"
+            },
+            "storageAccountName": {
+              "type": "string",
+              "defaultValue": "stgkzdefault"
+            }
+          },
+          "variables": {
+            "tagID": "sandbox",
+            "tagDeploy": "IaC",
+            "objectID": "194da7d9-e9eb-454d-a07a-4f68b547f960"
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2022-09-01",
+              "name": "[parameters('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "isHnsEnabled": true,
+                "accessTier": "Hot"
+              },
+              "tags": {
+                "ID": "[parameters('tag')]",
+                "Deploy": "[variables('tagDeploy')]"
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[subscriptionResourceId('Microsoft.Resources/resourceGroups', parameters('resourceGroupName'))]"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+
+      // Azure Region where resources will be deployed
+      // will default to 'EastUS' if not provided
+      "location": {
+        "value": "EastUS"
+      },
+      
+      // Name of the Resource Group-level deployment object
+      "deploymentName": {
+        "value": "sandboxDeployment"
+      },
+
+      // Resource Group name for all deployed resources
+      "resourceGroupName": {
+        "value": "rg-kizan-sandbox"
+      },
+
+      // Default storage account name
+      "storageAccountName": {
+        "value": "stgkizansandbox"
+      },
+      
+      //Key Vault name
+      "keyVaultName": {
+        "value": "kv-kizan-sandbox"
+      },
+
+      // Azure Data Factory name
+      "dataFactoryName": {
+        "value": "adf-kizan-sandbox"
+      },
+
+      // Default container name and location for all sample data
+      "blobContainerName":{
+        "value": "data"
+      }
+    }
+  }
