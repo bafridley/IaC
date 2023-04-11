@@ -1,20 +1,21 @@
 // ***************************************************************************************************************
+// ***** RESET Deploymenet *****
 // ***** purge keyvault after soft-delete *****
 // az keyvault list-deleted --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 --resource-type vault
 // az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
 // ***************************************************************************************************************
 
-@description('Location of the resources')
+//@description('Location of the resources')
 param location string = resourceGroup().location
 
-@description('Data Factory Name')
-param dataFactoryName string = 'adf-kizan-sandbox'
+@description('Name of the Azure storage account that contains the input/output data.')
+param storageAccountName string = 'stg${resourceGroup().name}'
 
 @description('Key Valut Name')
-param keyVaultName string = 'kv-kizan-sandbox'
+param keyVaultName string = 'kv-${resourceGroup().name}'
 
-@description('Name of the Azure storage account that contains the input/output data.')
-param storageAccountName string = 'stgkizansandbox'
+@description('Data Factory Name')
+param dataFactoryName string = 'adf-${resourceGroup().name}'
 
 @description('Name of the blob container in the Azure Storage account.')
 param blobContainerName string = 'data'
@@ -40,7 +41,7 @@ var dataFactoryPipeline = 'CopyData_parameters'
 // DLv2 Compatible Storage Account
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
-  location: location
+  location:  location
   sku: {
     name: 'Standard_LRS'
   }
@@ -51,7 +52,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 
   tags:{
-    ID:  tagID
+    ID: tagID
     Deploy: tagDeploy
   }
 
@@ -59,22 +60,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 //output storageAccountKey string = listKeys(storageAccount.id,'2022-09-01').keys[0].value
 
+
+
 resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' ={
   name: '${storageAccount.name}/default/${blobContainerName}'
-  dependsOn:[storageAccount]
+//  dependsOn:[storageAccount]
 }
 
-/*
-resource storageAccountKeys 'Microsoft.Storage/storageAccounts/keys@2021-04-01' = {
-  name: 'StorageAccountkeys'
-  parent: storageAccount
-}
-*/
-
+// create connection string from storage account access key and save in Key Vault
 var storageAccessKey = storageAccount.listKeys().keys[0].value
 var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccessKey};EndpointSuffix=core.windows.net'
-
-output storageName string = storageAccount.name
 
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01'= {
   name: keyVaultName
@@ -142,8 +137,6 @@ resource secretStorageConnectionString 'Microsoft.KeyVault/vaults/secrets@2023-0
 
 }
 
-
-
 // **** Azure Data Factory Resource **** //
 @description('KiZAn Azure Data Factory Model')
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
@@ -162,6 +155,10 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
       }
     }
   }
+
+
+
+
 /* -- configure repo integration later
     repoConfiguration: {
       type: 'FactoryGitHubConfiguration'
@@ -175,6 +172,9 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
     }
   }
 */
+
+
+
   tags: {
     ID: tagID
     Deploy: tagDeploy
@@ -200,6 +200,7 @@ resource keyValutAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-
 
 }
 
+// *** Data Factory Key Vault Linked Service *** //
 resource dataFactoryKeyVaultLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   name: dataFacotryKVLinkedServiceName
   parent:dataFactory
@@ -212,6 +213,7 @@ resource dataFactoryKeyVaultLinkedService 'Microsoft.DataFactory/factories/linke
   }
 }
 
+// *** Azure Blob Linked Service
 resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   parent: dataFactory
 //  dependsOn:blobContainer
@@ -227,10 +229,11 @@ resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedser
           referenceName:dataFacotryKVLinkedServiceName
           type: 'LinkedServiceReference'
         }
-        secretName: storageAccountConnectionStringSecretName
+        secretName: secretStorageConnectionString.name
       }
       }
     }
   }
+
 
 
