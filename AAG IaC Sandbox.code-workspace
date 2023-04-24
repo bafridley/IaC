@@ -3,5 +3,11 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"githubPullRequests.ignoredPullRequestBranches": [
+			"main"
+		],
+		"python.envFile": "${workspaceFolder}\\.databricks\\.databricks.env"
+	}
 }

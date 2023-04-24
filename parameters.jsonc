@@ -9,34 +9,34 @@
         "value": "EastUS"
       },
       
-      // Name of the Resource Group-level deployment object
-      "deploymentName": {
-        "value": "sandboxDeployment"
-      },
-
       // Resource Group name for all deployed resources
       "resourceGroupName": {
-        "value": "rg-kizan-sandbox"
+        "value": "rg-kz"
       },
 
       // Default storage account name
       "storageAccountName": {
-        "value": "stgkizansandbox"
+        "value": "stgkz"
       },
       
       //Key Vault name
       "keyVaultName": {
-        "value": "kv-kizan-sandbox"
+        "value": "kv-kz"
       },
 
       // Azure Data Factory name
       "dataFactoryName": {
-        "value": "adf-kizan-sandbox"
+        "value": "adf-kz"
       },
 
       // Default container name and location for all sample data
       "blobContainerName":{
         "value": "data"
-      }
+      },
+
+      // Default container name and location for all sample data
+      "managedIdentityName":{
+        "value": "idADF"
     }
   }
+}
