@@ -43,7 +43,6 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
 	name: storageAccountName
 }
 
-
 // Reference existing SQL Server for linked service 
 resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview'existing ={
   name:sqlServerName
@@ -184,7 +183,7 @@ resource dataFactorySQLLinkedService 'Microsoft.DataFactory/factories/linkedserv
   }
 }
 
-// ***** Data Factory CSV Linked Service
+// ***** Data Factory CSV Dataset
 resource dataFactoryCSVDataset 'Microsoft.DataFactory/factories/datasets@2018-06-01' = {
   parent: dataFactory
   name: dataFactoryCSVDataSetName
