@@ -39,25 +39,27 @@ var dataFactoryPipelineName = 'CopyData_parameters'
 
 // *********** EXISTING RESOURCES USED IN DEPLOYMENT **********
 // Reference existing storage account for linked service 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-	name: storageAccountName
-}
+//resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
+//	name: storageAccountName
+//}
 
 // Reference existing SQL Server for linked service 
-resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview'existing ={
-  name:sqlServerName
-}
+//resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview'existing ={
+//  name:sqlServerName
+//}
+
 // Reference existing SQL Database for linked service 
-resource sqlDB 'Microsoft.Sql/servers/databases@2022-08-01-preview'existing={
-  parent:sqlServer
-  name:sqlDBName
-}
+//resource sqlDB 'Microsoft.Sql/servers/databases@2022-08-01-preview'existing={
+//  parent:sqlServer
+//  name:sqlDBName
+//}
 
 
 // *********** AZURE DATA FACTORY RESOURCES ********** //
 @description('KiZAN Azure Data Factory Model')
 resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
 	name: dataFactoryName
+  dependsOn:[keyVault]
 	location: location
 	identity: {
     type:'SystemAssigned'
@@ -130,6 +132,7 @@ resource keyValutAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-
 resource dataFactoryKeyVaultLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   name: dataFacotryKVLinkedServiceName
   parent:dataFactory
+  dependsOn:[keyVault]
   properties: {
     annotations:[]
     type:'AzureKeyVault'
@@ -142,7 +145,7 @@ resource dataFactoryKeyVaultLinkedService 'Microsoft.DataFactory/factories/linke
 // ***** Data Factory Azure Blob Linked Service *****
 resource dataFactoryBlobLinkedService 'Microsoft.DataFactory/factories/linkedservices@2018-06-01' = {
   parent: dataFactory
-  dependsOn:[dataFactoryKeyVaultLinkedService]
+  dependsOn:[dataFactoryKeyVaultLinkedService]  
   name: dataFactoryBlobLinkedServiceName
   properties: {
     annotations:[]

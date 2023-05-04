@@ -76,7 +76,6 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
 }
 
 
-
 // *********** Reference existing Key Vault Secrets for Storage Account Access **********
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
   name: keyVaultName
