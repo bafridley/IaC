@@ -16,6 +16,7 @@ param keyVaultName string = 'data'
 var saLogin = 'kzSA'
 var saPassword = 'pass@word1'
 
+
 // *************************************************************************
 // Default SQL Server used in ADF Linked Services and Pipelines
 // *************************************************************************
@@ -46,7 +47,8 @@ resource sqlDB 'Microsoft.Sql/servers/databases@2022-08-01-preview'={
 }
 
 // *********************************************************************************************************
-// Requred to set flag to allow firewall exception allowing Azure Services access to SQL Server
+// Create Firewall rule to whitelist Azure Services IP Addresses.
+// Required to set flag to allow firewall exception allowing Azure Services access to SQL Server
 // This is necessary for ADF Linked Services to work with SQL Server
 // *********************************************************************************************************
 resource SQLAllowAllWindowsAzureIps 'Microsoft.Sql/servers/firewallRules@2020-11-01-preview' = {

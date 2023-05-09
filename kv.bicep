@@ -23,27 +23,37 @@ param uaManagedIDName string
 var objectID = '194da7d9-e9eb-454d-a07a-4f68b547f960'
 
 
-
-// DLv2 Compatible Storage Account
+// ************************************************
+// Existing Storage Account created earlier
+// ************************************************
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing =  {
   name: storageAccountName
 }
 
 
-// User assigned managed identity to handle required permissions later in the deployment
+// ***************************************************************************
+// User assigned managed identity created previously 
+// Managed Identity used for required permissions later in the deployment
+// ***************************************************************************
 resource managedID 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' existing = {
   name: uaManagedIDName
 }
 
 
-// Predefined Contributor Role
+// ***************************************************************************************************
+// Use the system predefined Contributor Role ()'b24988ac-6180-42a0-ab88-20f7382dd24c')
+// Give Contributor role to Managed Identity to handle required permissions later in the deployment
+// ***************************************************************************************************
 resource roleDefinitionContributor 'Microsoft.Authorization/roleDefinitions@2022-04-01' existing ={
   scope:subscription()
   name: 'b24988ac-6180-42a0-ab88-20f7382dd24c'
 
 }
 
+
+// ************************************************************************************************************
 // Add Contributor role assignment to Managed Identity to handle required permissions later in the deployment
+// ************************************************************************************************************
 resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01'={
   name:guid(resourceGroup().id,uaManagedIDName, roleDefinitionContributor.id)
   properties:{
@@ -60,7 +70,6 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01'={
 // In the meantime, manually purge key vaults with:
 // az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
 //***************************************************************************************************
-// Before trying to deploy, purge the key vault if it has been soft-deleted previously
 
 
 // ***************************************************************************************************
@@ -94,7 +103,10 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
 // *************************************************************************************************** */
 
 
-// *********** KEY VAULT RESOURCES ********** //
+
+// *****************************************************************
+// *********** KEY VAULT RESOURCES ********** 
+// *****************************************************************
 resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01'= {
   name: keyVaultName
 //  dependsOn:[deploymentScript]
@@ -117,7 +129,7 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01'= {
         }
       }
 
-      // Give Key Vault access to Managed ID
+      // Give Key Vault access to User Assigned Managed Identity created previously
       {
         objectId: managedID.properties.principalId
         tenantId: tenant().tenantId
@@ -128,9 +140,9 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01'= {
     ]
 
   }
-
 }
 
+// Dummy Secret to test access to Key Vault
 resource secretDummy 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
   parent: keyVault
   name: 'sandbox-secret'

@@ -5,7 +5,7 @@
 // az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
 // ***************************************************************************************************************
 
-//@description('Location of the resources')
+@description('Location of the resources')
 param location string = resourceGroup().location
 
 @description('Name of the Azure storage account that contains the input/output data.')

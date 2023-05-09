@@ -1,4 +1,18 @@
+// CLI commands to deploy bicep file
+// az deployment sub what-if --template-file main.bicep --parameters parameters.jsonc --location eastus
+// az deployment sub create --template-file main.bicep --parameters parameters.jsonc --location eastus
+
+
+
+// ********************* //
 // ** main bicep file ** //
+// ********************* //
+
+
+
+// parameter values will come from a parameters file if specified
+// otherwise, values the supplied default values will be used 
+
 
 @description('Azure region for the Resource Group')
 param location string = 'eastus'
@@ -19,24 +33,57 @@ param dataFactoryName string = 'adf-${resourceGroupName}'
 param blobContainerName string = 'data'
 
 @description('Name of the User Assigned Managed Identity used for deplyment permissions')
-param managedIdentityName string = 'IaC'
+param managedIdentityName string = 'idADF'
 
-// Scope all deployments at Subscription level
+
+
+/* *********************************************************
+// ************************************
+// Additional parameter decorators
+// ************************************
+
+// @secure parameters are not saved to deployment history or logged
+// Not visibile in the Azure portal
+@secure()
+param adminPassword string
+
+@maxLength(11)
+param storagePrefix string = 'stg'
+
+@allowed([
+  'Standard_LRS','Standard_GRS','Standard_RAGRS','Standard_ZRS','Premium_LRS'
+])
+param storageAccountType string
+********************************************************* */
+
+
+
+// *****************************************************************************
+// Scope the deployments at Subscription level to create a new Resource Group
+// *****************************************************************************
 targetScope='subscription'
 
+
+
+// ****************************************************************
 // Create new Resource Group for all new resources
+// ****************************************************************
 resource rg 'Microsoft.Resources/resourceGroups@2022-09-01' = {
   name: resourceGroupName
   location: location
 }
 
+
+
+// ************************************************************************************************
 // Deploy base storage account used by other resources
 // Would be cleaner to deploy in stg deployment along with container and other file activities
 // Moved into separate module as work-around to inconsistent dependency problems where
 // Container would occasionally be deployed before Storage Account (reulting in failure)
 // Setting DependsOn and Parent properties did not resolve the issue
+// ************************************************************************************************
 module prereqs './prereqs.bicep'={
-  scope:rg
+  scope:rg // Scope to the Resource Group created above
   dependsOn:[rg]
   name:'prereqsDeployment'
   params:{
@@ -46,9 +93,12 @@ module prereqs './prereqs.bicep'={
   }
 }
 
+// ****************************************************************
 // Deploy Key Vault that will be used by other resources
+// Key Vault is used to store secrets and connection strings
+// ****************************************************************
 module kv './kv.bicep' = {
-  scope:rg
+  scope:rg // Scope to the Resource Group created above
   dependsOn:[prereqs]
   name:'kvDeployment'
   params:{
@@ -59,9 +109,12 @@ module kv './kv.bicep' = {
   }
 }
 
+
+// ****************************************************************
 // Deploy Storage account, container and upload sample data
+// ****************************************************************
 module stg './stg.bicep'={
-  scope:rg
+  scope:rg // Scope to the Resource Group created above
   dependsOn:[kv]
   name:'stgDeplyment'
   params:{
@@ -69,13 +122,17 @@ module stg './stg.bicep'={
     storageAccountName:storageAccountName
     blobContainerName:blobContainerName
     keyVaultName:keyVaultName
+    uaManagedIDName:prereqs.outputs.uaManagedIDName
   }
 }
 
 
+
+// ****************************************************************
 // Deploy SQL Server and sample database
+// ****************************************************************
 module sql './sql.bicep'={
-  scope:rg
+  scope:rg // Scope to the Resource Group created above
   dependsOn:[kv]
   name:'sqlDeployment'
   params:{
@@ -88,14 +145,19 @@ module sql './sql.bicep'={
 }
 
 
-// ***** Deploy Azure DataFactory resources into resoruce group ***
+
+// ****************************************************************
+// ***** Deploy Azure DataFactory resources into resoruce group 
+// ****************************************************************
 module adf './adf.bicep' = {
-  scope: rg
+  scope: rg // Scope to the Resource Group created above
   name: 'adfDeployment'
-// User output variables of other modeules as input to ADF module parameters to force dependency
+  dependsOn:[kv,stg,sql]
+
+  // using qualified object.property notation below will also enforce dependency
   params: {
     location:location
-    storageAccountName: prereqs.outputs.storageAccountName
+    storageAccountName: prereqs.outputs.storageAccountName    
     keyVaultName:kv.outputs.keyVaultName
     dataFactoryName:dataFactoryName
     blobContainerName:stg.outputs.blobContainerName

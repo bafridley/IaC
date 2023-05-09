@@ -34,16 +34,17 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 }
 
-
-
-
+// ***************************************************************************************************
 // create user assigned managed identity to handle required permissions later in the deployment
+// ***************************************************************************************************
 resource managedID 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
   name: managedIdentityName
   location: location
 }
 
 
+// ****************************************************************
 // Return output parameters to use elsewhere in deployment
+// ****************************************************************
 output storageAccountName string = storageAccount.name
 output uaManagedIDName string = managedID.name

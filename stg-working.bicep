@@ -7,23 +7,12 @@ param storageAccountName string = 'stg${resourceGroup().name}'
 @description('Name of the blob container in the Azure Storage account.')
 param blobContainerName string = 'data'
 
-@description('Name of the Key Vault to hold access secrets')
-param keyVaultName string = 'kv${resourceGroup().name}'
-
 @description('user Assigne Managed Identity')
 param uaManagedIDName string
 
 
-
 // Name of file to upload to blobContainer
 var fileName = 'employee.csv'
-
-// Name of Store Account access key secret
-var storageAccountAccessKeySecretName = 'storageAccountAccessKey'
-
-// Name of Store Account connection string secret
-var storageAccountConnectionStringSecretName = 'storageAccountConnectionString'
-
 
 
 // User assigned managed identity to handle required permissions later in the deployment
@@ -43,12 +32,36 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing 
 }
 
 
-// Defalut container in Storage Account
+// Defalut container for data files
 resource blobContainer 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-09-01' ={
   name: '${storageAccount.name}/default/${blobContainerName}'
   dependsOn:[storageAccount]
 }
 
+
+
+// *** template for uploading batches of files at one time
+var sourceDir = '/data'
+
+resource deploymentScriptBatch 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
+  name: 'dscript-upload-batch-files'
+  dependsOn: [blobContainer]
+  location: location
+  kind: 'AzureCLI'
+  properties: {
+    azCliVersion: '2.40.0'
+    timeout: 'PT5M'
+    retentionInterval: 'PT1H'
+    
+    
+    storageAccountSettings:{
+      storageAccountName:storageAccount.name
+      storageAccountKey:storageAccount.listKeys().keys[0].value
+    }
+
+    scriptContent: 'az storage blob upload-batch --account-name ${storageAccountName} --destination ${blobContainerName} --source ${sourceDir}'
+  }
+}
 
 
 
@@ -90,44 +103,6 @@ resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
 
 
 
-// *********** Reference existing Key Vault Secrets for Storage Account Access **********
-resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
-  name: keyVaultName
-}
-
-
-// ********************************************************************************************
-// Retrieve Access Key and create connection string to store as secrets in Key Vault
-// These secrets are used by other resources in the deployment
-// ********************************************************************************************
-var storageAccessKey = storageAccount.listKeys().keys[0].value
-var storageConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};AccountKey=${storageAccessKey};EndpointSuffix=core.windows.net'
-
-
-// *****************************************************************
-// Create storage account access key secret for linked service
-// *****************************************************************
-resource secretStorageAccountKey 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  parent: keyVault
-  dependsOn:[storageAccount]
-  name: storageAccountAccessKeySecretName
-  properties: {
-    value: storageAccessKey
-  }
-}
-
-// ***********************************************************************
-// Create storage account connection string secret for linked service
-// ***********************************************************************
-resource secretStorageConnectionString 'Microsoft.KeyVault/vaults/secrets@2023-02-01' = {
-  parent: keyVault
-  dependsOn:[blobContainer]
-  name: storageAccountConnectionStringSecretName
-  properties: {
-    value:  storageConnectionString
-  }
-
-}
 
 
 // Return blobCotainerName to be used elsewhere in deployment script
@@ -135,7 +110,7 @@ output blobContainerName string = blobContainerName
 
 
 // *** template for uploading batches of files at one time
-//var sourceDir = './data/'
+//var sourceDir = 'C:/Users/bafri/OneDrive - KiZAN Technologies/AAG Best Practices/IaC/data'
 //
 //resource deploymentScript 'Microsoft.Resources/deploymentScripts@2020-10-01' = {
 //  name: 'dscript-upload-files'

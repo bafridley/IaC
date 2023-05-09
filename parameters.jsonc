@@ -11,10 +11,10 @@
       
       // Resource Group name for all deployed resources
       "resourceGroupName": {
-        "value": "rg-kz"
+        "value": "rg-kz-OH"
       },
 
-      // Default storage account name
+      // Default storage account name - lowercase letters and numbers only
       "storageAccountName": {
         "value": "stgkz"
       },
