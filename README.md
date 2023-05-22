@@ -9,7 +9,7 @@
 * passes parameters from parameter file to modules as required
 * calls various deployment modules 
 
-![Alt text](vis-main.png)
+
 
 `prereqs.bicep` - deploy baseline depenent resources that must exist for other resources to be deployed successfully. Dependency mechanism (Parent and DependsOn properties) not consistently acting as expected. Some resource deployments are attempted before required resource deployments complete. Putting baseline objects in separate module and making other modules dependent on this module is a work-around. If dependency issue is resolved, these resources would be better deployed in other modules with similar resources (i.e. Storage Account with blob container and other file resources)
 * Storage account used by other modules
