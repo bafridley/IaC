@@ -38,9 +38,9 @@ param managedIdentityName string = 'idADF'
 
 
 /* *********************************************************
-// ************************************
-// Additional parameter decorators
-// ************************************
+// ********************************************
+// Examples of additional parameter decorators
+// ********************************************
 
 // @secure parameters are not saved to deployment history or logged
 // Not visibile in the Azure portal
