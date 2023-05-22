@@ -37,23 +37,6 @@ var dataFactorySQLDataSetName = 'SQL_Parameters'
 var dataFactoryPipelineName = 'CopyData_parameters'
 
 
-// *********** EXISTING RESOURCES USED IN DEPLOYMENT **********
-// Reference existing storage account for linked service 
-//resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' existing = {
-//	name: storageAccountName
-//}
-
-// Reference existing SQL Server for linked service 
-//resource sqlServer 'Microsoft.Sql/servers@2022-08-01-preview'existing ={
-//  name:sqlServerName
-//}
-
-// Reference existing SQL Database for linked service 
-//resource sqlDB 'Microsoft.Sql/servers/databases@2022-08-01-preview'existing={
-//  parent:sqlServer
-//  name:sqlDBName
-//}
-
 
 // *********** AZURE DATA FACTORY RESOURCES ********** //
 @description('KiZAN Azure Data Factory Model')
@@ -93,7 +76,7 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
       type: 'FactoryGitHubConfiguration'
       hostName: ''
       accountName: 'bafridley'
-      repositoryName: 'adflearn'
+      repositoryName: 'adfdemo'
       collaborationBranch: 'main'
       rootFolder: '/'
       lastCommitId: '096d79ffaa2960a66d84a834c7a2856e2dec030b'
