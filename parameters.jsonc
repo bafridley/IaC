@@ -11,17 +11,17 @@
       
       // Resource Group name for all deployed resources
       "resourceGroupName": {
-        "value": "rg-kz-OH"
+        "value": "rg-june2023"
       },
 
       // Default storage account name - lowercase letters and numbers only
       "storageAccountName": {
-        "value": "stgkz"
+        "value": "stgkzjune"
       },
       
       //Key Vault name
       "keyVaultName": {
-        "value": "kv-kz"
+        "value": "kv-kzdemo"
       },
 
       // Azure Data Factory name

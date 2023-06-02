@@ -11,7 +11,7 @@
 
 
 // parameter values will come from a parameters file if specified
-// otherwise, values the supplied default values will be used 
+// otherwise, the values provided in commandline or default values will be used 
 
 
 @description('Azure region for the Resource Group')
