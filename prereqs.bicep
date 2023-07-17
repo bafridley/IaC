@@ -34,6 +34,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
 
 }
 
+
 // ***************************************************************************************************
 // create user assigned managed identity to handle required permissions later in the deployment
 // ***************************************************************************************************

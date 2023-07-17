@@ -1,8 +1,8 @@
 // ***************************************************************************************************************
 // ***** RESET Deploymenet *****
 // ***** purge keyvault after soft-delete *****
-// az keyvault list-deleted --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 --resource-type vault
-// az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
+// az keyvault list-deleted --subscription xxx-xxxx --resource-type vault
+// az keyvault purge --subscription xxx-xxx -n kv-sandbox
 // ***************************************************************************************************************
 
 @description('Location of the resources')
@@ -48,8 +48,8 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
     type:'SystemAssigned'
 // Eventually want to use User Assigned Managed Identity
 //    userAssignedIdentities:{
-//      '/subscriptions/90d2d107-4965-4e5d-862b-8618c111f1f8/resourcegroups/rg-kizan-sandbox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/idADF': {
-////        clientId: 'e9fcd989-993c-49fd-be74-6676f9f2fc0e'
+//      '/subscriptions/xxx-xxx/resourcegroups/rg-kizan-sandbox/providers/Microsoft.ManagedIdentity/userAssignedIdentities/idADF': {
+////        clientId: 'xxx-xxx'
 //        principalId: idADF.id
 //      } 
 //    }
@@ -75,7 +75,7 @@ resource dataFactory 'Microsoft.DataFactory/factories@2018-06-01' = {
     repoConfiguration: {
       type: 'FactoryGitHubConfiguration'
       hostName: ''
-      accountName: 'bafridley'
+      accountName: 'xxxxxxxxx'
       repositoryName: 'adfdemo'
       collaborationBranch: 'main'
       rootFolder: '/'
@@ -96,7 +96,6 @@ resource keyVault 'Microsoft.KeyVault/vaults@2023-02-01' existing = {
 resource keyValutAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-01'={
   parent:keyVault
   name:'add'
-  dependsOn:[dataFactory]
   properties:{
     accessPolicies:[
       {
@@ -108,7 +107,6 @@ resource keyValutAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2023-02-
       }
     ]
   }
-
 }
 
 // ***** Data Factory Key Vault Linked Service *****

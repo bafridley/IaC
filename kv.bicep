@@ -1,8 +1,8 @@
 // ***************************************************************************************************************
 // ***** RESET Deploymenet *****
 // ***** purge keyvault after soft-delete *****
-// az keyvault list-deleted --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 --resource-type vault
-// az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
+// az keyvault list-deleted --subscription xxx-xxx --resource-type vault
+// az keyvault purge --subscription xxx-xxx -n kv-sandbox
 // ***************************************************************************************************************
 
 
@@ -20,7 +20,7 @@ param uaManagedIDName string
 
 
 // Temporarily hard-code personal objectID to allow admin access to KeyVault
-var objectID = '194da7d9-e9eb-454d-a07a-4f68b547f960'
+var objectID = 'xxx-xxx'
 
 
 // ************************************************
@@ -68,7 +68,7 @@ resource roleAssignment 'Microsoft.Authorization/roleAssignments@2022-04-01'={
 // Key Vault deployment will fail if the named key-vault existed before and is soft-deleted
 // Will provide Az CLI deployment script to purge soft-deleted key vaults when time permits
 // In the meantime, manually purge key vaults with:
-// az keyvault purge --subscription 90d2d107-4965-4e5d-862b-8618c111f1f8 -n kv-kizan-sandbox
+// az keyvault purge --subscription xxx-xxx -n kv-sandbox
 //***************************************************************************************************
 
 

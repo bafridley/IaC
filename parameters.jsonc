@@ -11,22 +11,22 @@
       
       // Resource Group name for all deployed resources
       "resourceGroupName": {
-        "value": "rg-june2023"
+        "value": "rg-iac-adf"
       },
 
       // Default storage account name - lowercase letters and numbers only
       "storageAccountName": {
-        "value": "stgkzjune"
+        "value": "stgiacadf"
       },
       
       //Key Vault name
       "keyVaultName": {
-        "value": "kv-kzdemo"
+        "value": "kv-iac-adf"
       },
 
       // Azure Data Factory name
       "dataFactoryName": {
-        "value": "adf-kz"
+        "value": "adf-iac"
       },
 
       // Default container name and location for all sample data

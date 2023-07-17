@@ -8,11 +8,8 @@
 // ** main bicep file ** //
 // ********************* //
 
-
-
 // parameter values will come from a parameters file if specified
 // otherwise, the values provided in commandline or default values will be used 
-
 
 @description('Azure region for the Resource Group')
 param location string = 'eastus'
